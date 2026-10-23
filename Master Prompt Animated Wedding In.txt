@@ -1,0 +1,149 @@
+# Master Prompt: Animated Wedding Invitation Website
+
+How to use: fill in every `[BRACKET]` in PART 1 (the couple's details), attach the couple's photos (and their printed invitation card if they have one), then paste PART 1 + PART 2 together into a new Claude chat. Delete any line that does not apply (for example, no Father of the Day, no vendors).
+
+---
+
+## PART 1: THE COUPLE'S DETAILS (fill this in)
+
+**Names**
+- Bride: title [Miss/Mrs], first names [e.g. Ada Grace], surname [Obi]
+- Name the bride is known by / shown in big letters on the hero: [e.g. Grace]
+- Groom: title [Mr], first names [Chidi Paul], surname [Eze]
+- Name the groom is known by on the hero: [Chidi]
+- Bride's parents line: [Daughter of Mr & Mrs ... / Late Mr ... & Mrs ...]
+- Groom's parents line: [Son of ...]
+- Seal letters (two initials): [A & C]
+- Hashtag: [#AC2027]
+- Tagline / theme: [e.g. "To Have And To Hold"]
+
+**Date and time**
+- Date: [Saturday, 14th March 2027]
+- Start time: [10:00 AM], time zone [Africa/Lagos, UTC+1]
+- Expected length (for the calendar entry): [4 hours]
+
+**Venues** (name, sub-name, full street address, area/city)
+- Ceremony: [name + address]
+- Reception: [name + address]
+- For each one, paste the exact address as Google Maps shows it (so the map pin lands correctly): [address as in Google Maps]
+
+**Colours of the day** (name + hex for each; also say which one is the main/primary and which is the accent)
+- [Colour 1, #hex], [Colour 2, #hex], [Colour 3, #hex] ... (typically 4 to 6)
+- Main theme colour (envelope, dark sections): [e.g. deep plum #4A1B4F]
+- Accent colour (seal, lines, script text): [gold / rose gold / silver / emerald, #hex]
+- Paper colour (invitation card): [ivory #FBF6EC]
+
+**Contact**
+- Phone for "Call to RSVP": [0800...]
+- WhatsApp number for "RSVP on WhatsApp" (international format, no +): [234...]
+- Contact person's name for the FAQ: [Our wedding coordinator]
+
+**Special people / extras (delete what is not needed)**
+- Father of the Day: [Names, role/company]
+- Vendors list: [Role: Name], [Role: Name], ...
+- Website developer credit line (placed as the last item of the vendors list): [Role: Name]
+
+**Gifts**
+- Bank: [Bank name], account name [Name], account number [0123456789]
+- Short gift message: [or: use a warm default]
+
+**Story** (write in the couple's own words; ask me to shorten it if long)
+- Intro line: [...]
+- 3 key moments, each with a short title, a small label (e.g. "Where it began"), 1 to 3 sentences, and which photo goes with it: [...]
+- Closing line (shown large at the end): [...]
+
+**Toast** (6 short lines, or say "write a warm Christian/secular/cultural toast for me"): [...]
+
+**FAQ answers**: dress code (use the colours), parking, accommodation, contact person: [...]
+
+**Photos** (attached): list which is which: hero photo [silhouette / couple], engagement photo [name], photo that slides out of the envelope [name], traditional / church / pre-wedding sets [...]
+- Printed invitation card attached: [yes/no]. If yes, match its colours, florals, ornaments and fonts; cut the florals out as transparent corner decorations.
+
+**Music**: [song title + artist, OR "instrumental, I will supply the MP3"]. Note for Claude: do not try to download or recreate copyrighted songs. Use a short generated placeholder at `assets/music.mp3` and tell me to replace it with my own licensed file.
+
+**Hosting**
+- Where I will host: [GitHub Pages / Netlify / Vercel]
+- Final address (needed for link previews): [https://USERNAME.github.io/REPO/ or https://mydomain.com/]
+- RSVP: [I have a Google Apps Script Web App URL: ... / I do not have one yet, include setup steps]
+- Photographer credit: [none / text]
+
+---
+
+## PART 2: BUILD SPECIFICATION (paste as is)
+
+Build a luxurious, mobile-first, single-page animated wedding invitation website using only HTML, CSS and vanilla JavaScript (no frameworks, no build step), using the couple details above. It must feel tactile, like opening a real paper invitation. Deliver `index.html`, `styles.css`, `script.js`, `google-apps-script.gs`, `README.md` and an `assets/` folder, and also give me everything as one downloadable zip (folder name `wedding-site/`).
+
+### 1. One config object
+All text and settings live in ONE `CONFIG` object at the top of `script.js` (names, parents, dates, venues, map queries, colours, story, gallery, toast, phone numbers, bank details, FAQ, vendors, Father of the Day, footer, share message, music, RSVP endpoint). The app code below it should never need editing. Use `data-cfg="path.to.value"` attributes in the HTML so text is filled from CONFIG. Colours are CSS variables at the top of `styles.css`, derived from the couple's colours. Never leave an old couple's name anywhere (check titles, meta tags, alt text, ICS file name, WhatsApp message text, noscript text).
+
+### 2. Design language
+- Build the palette from the couple's colours: a deep main colour for the envelope and dark sections, a paper colour for cards, metallic accent text (a CSS gradient on `.gold-text` using the accent colour, with a darker variant on light paper so it is readable).
+- Fonts via Google Fonts (non-blocking): a classical caps serif for headings (Cinzel), a script font for names (Great Vibes), an elegant serif for body (Cormorant Garamond), a clean sans for small labels (Montserrat), all with elegant system fallbacks. Never block first paint on fonts.
+- Double thin accent borders on paper cards, small flourish dividers (SVG), subtle drifting floral/silk corner ornaments if the couple has a printed card (cut out of the card image with transparent backgrounds).
+- Body text at least 18px on phones. Large tap targets (at least 44px). Contrast must be accessible.
+
+### 3. Envelope intro (the opening screen)
+- Full-screen sealed envelope in the main colour with a damask-style pattern, 3D flap (CSS perspective, rotateX, backface-visibility), a metallic accent wax seal with the two initials, the words "YOU ARE INVITED", and a small "Tap the seal to open" hint.
+- On tap: seal presses in, cracks into two halves and fades with a sparkle burst; the flap opens in 3D; **the couple's chosen photo (not the printed card) slides up out of the envelope in a thin paper frame with a fine accent border, then scales up to fill the screen**, the envelope drops away, and it cross-fades into the main page. Total about 3.5 seconds, built with the Web Animations API plus staged timers.
+- Photo card sizing must be aspect-ratio aware: compute the fly-to-screen scale from both width and height so any photo shape fits (`s = min(innerWidth*0.94/w, innerHeight*0.8/h)`). Prepare the card photo as a crop of about 6:7, about 900px wide, as `assets/envelope-card.webp`.
+- Music starts on that first tap (browsers require a user gesture), fading in. A mute/unmute speaker button stays top-right on the whole site; remember the choice in localStorage inside try/catch.
+- A visible "Skip" button, a `prefers-reduced-motion` fallback (simple fade, no scroll animations), page content `inert` while the intro is up, scroll locked during the intro, focus management.
+- Support `?guest=Name` (greets "Dear Name" on the envelope and card and pre-fills the RSVP name) and `?nointro` (skips the envelope, for testing).
+
+### 4. Page sections, in this order
+1. **Hero**: couple photo, hashtag, tagline, the two hero names, date, city, scroll cue. On phones the photo is on top with content overlapping; on wide screens it is photo-left, text-right.
+2. **The invitation card** (paper with corner florals): small logo/monogram (wedding rings in a laurel wreath, SVG), hashtag, tagline, "With the consent and blessings of both families", bride (title, given names in caps, surname in large script, parents), ampersand divider, groom (same), "Joyfully invite you to celebrate our union in marriage on", then date and time, then "Colours of the Day" with round swatches (the accent swatch looks metallic).
+3. **Countdown** to the exact date and time in the correct time zone (days, hours, minutes, seconds, with a small flip animation), changing to a "We are married!" message after the date. Below it: **Add to Calendar** buttons for Google Calendar (template link) and Apple/Outlook (.ics file generated in JS as a Blob with a proper UTC time, location and description).
+4. **Venues**: two cards (Ceremony, Reception) each with "Open in Google Maps" and "Get directions" buttons. Build the links from `mapQuery` in CONFIG using the exact Google Maps address text so the pin lands correctly; allow an optional pasted `mapsUrl` override.
+5. **Father of the Day** (optional): label in accent script/caps, name(s) in caps, role in italics.
+6. **Our Story**: short intro, a timeline of three moments (label, title, text, framed photo), and the closing line large and italic. Keep the couple's story short and warm; keep their own ending line verbatim.
+7. **Gallery**: masonry grid of thumbnails with a full-screen lightbox (arrows, keyboard left/right/Escape, swipe via pointer events, counter like "3 / 20", captions from alt text, focus trap). Interleave portrait and landscape photos for rhythm. Each photo needs a full version and a small `-sm` thumbnail, WebP, lazy loaded with width/height set (no layout shift).
+8. **Wedding Toast**: dark section with the script heading and 6 italic lines, the last line highlighted.
+9. **RSVP**: form with name, phone, attending (Joyfully accept / Regretfully decline), number of guests, optional message, a hidden honeypot field, inline accessible validation, and a success state with an animated checkmark. It POSTs JSON as `text/plain` with `mode:'no-cors'` to a Google Apps Script Web App (include `google-apps-script.gs` that appends rows to an "RSVPs" sheet, sanitises formula-injection characters and keeps leading zeros in phone numbers). If no endpoint is set, show a friendly message pointing to the WhatsApp and Call buttons. Under the form: **RSVP on WhatsApp** (opens `wa.me/NUMBER` with a prefilled message including name, attending and guest count) and **Call to RSVP** (`tel:` link). Use the WhatsApp number and the call number separately if they differ.
+10. **Gifts**: warm message, bank card with bank, account number (large), account name, and a **Copy account number** button (Clipboard API with fallback, plus a small toast confirming).
+11. **FAQ accordion** (single open at a time, `aria-expanded`, animated height): Dress code (with swatches), Parking, Accommodation, Contact person (phone link, and mention the WhatsApp number if different).
+12. **Vendors** (optional): a clean list of "ROLE / Vendor name" rows, two columns on wide screens, ending with the website developer credit if provided.
+13. **Footer**: logo badge, hashtag, tagline, an arched framed photo, a thank-you message, a **Share on WhatsApp** button (opens `wa.me/?text=` with the invitation message and link) and the couple's names. Do NOT put the developer credit here if it is in the vendors list.
+
+### 5. Responsive layout (both required)
+- **Phone-first (about 390px)** is the primary design. On tablets up to 899px keep the centred phone-width column.
+- **From 900px wide (laptops and desktops)** switch to a real wide layout: full-window envelope intro (the envelope scales to the window and the photo card stays about 340px wide), hero split into photo-left and text-right, content kept to readable widths (about 1100px wrapper with full-bleed section backgrounds), venues side by side, the three story moments in three columns, gallery in 4 columns (5 above 1500px), vendors in 2 columns, RSVP/gifts/FAQ in centred columns, larger corner ornaments. All wide-screen rules live in one `@media (min-width:900px)` block at the end of `styles.css`. Verify there is no horizontal scroll at 390, 768, 1024, 1366 and 1920px.
+
+### 6. Link preview (WhatsApp, Facebook, Twitter)
+- Put these in `<head>`: `og:type`, `og:site_name`, `og:title` ("Bride & Groom | #HASHTAG"), `og:description`, `og:url`, `og:image` (+ width 1200, height 630, alt), `twitter:card=summary_large_image`, title, description, image, plus `<meta name="description">` and canonical.
+- **Description text is exactly: "You are invited to celebrate our union in marriage."** and nothing else (no date, venue or details).
+- All URLs must be ABSOLUTE and use my real hosting address given above (for example `https://USERNAME.github.io/REPO/assets/og-image-2.jpg`). Never leave a placeholder domain in the files you hand over; if I have not given an address, ask me for it before finalising, and list the 4 places to change later.
+- The preview image is a **wide landscape picture of the sealed envelope** with the seal initials and "YOU ARE INVITED" (1200x630, JPG, under 300KB), rendered with Playwright from the real intro (viewport 900x473 at device scale 1.333, hide Skip/sound/hint, wait about 2.8s). Name it `og-image-2.jpg` (a new name so old WhatsApp caches are bypassed) and tell me how to bust the cache later (rename the file or share with `?v=2`, then use the Facebook Sharing Debugger "Scrape Again").
+
+### 7. Photos and assets
+- Convert all photos to WebP, correct EXIF rotation, sizes: gallery full 900 to 1400px wide, thumbs 480 to 640px; hero about 960px wide and watermark-free (crop watermarks out; if some photos have a photographer watermark, say so and ask whether to credit).
+- If a printed invitation card is attached, extract the florals and silk drapes as transparent corner ornaments (connected-component segmentation, eroded edges, no paper halos), and match its colours.
+- Create `favicon.svg` (the seal monogram), `damask.svg`, `lining.svg`, `swash.svg`.
+- Keep total weight small: under about 200KB before the guest taps the seal (excluding fonts); lazy-load gallery, florals and music; preload only the hero and the envelope card.
+
+### 8. Quality, accessibility, performance
+- Semantic landmarks, alt text on every photo, visible focus styles, labelled form fields with `aria-describedby` errors, skip link, `aria-live` for the toast and RSVP result, lightbox with `role="dialog"` and focus return, keyboard-accessible accordion.
+- Respect `prefers-reduced-motion`. All animation uses transform and opacity. IntersectionObserver `.reveal` fade-ups with a no-JS fallback (`<noscript>` message with names, date, city and RSVP number).
+- Wrap every localStorage use in try/catch.
+- Test in a real headless browser (Playwright is available; start a local `python3 -m http.server`): intro sequence (capture slowed frames to check it), skip, reduced motion, countdown, ICS download content, Google Calendar link, 4 map links, FAQ, copy-to-clipboard, lightbox (open, next, wrap, swipe, Escape), RSVP validation and a mocked successful POST, mute memory, the after-wedding "We are married!" state, no JS errors, and full-page screenshots at 390px and 1366px (scroll the page first so reveal animations fire). Fix what fails before delivering. Say honestly what you could not verify (real WhatsApp preview, real Safari, the live Apps Script).
+- Google Fonts and some package hosts may be blocked in the sandbox; do not retry blocked downloads, use runtime Google Fonts links with fallbacks, and mention it.
+
+### 9. README (plain-English, for a non-developer)
+File map; how to edit CONFIG; the list of placeholders still to fill; how photos are named and replaced; Google Sheet RSVP setup step by step (create sheet, Extensions then Apps Script, paste the script, Deploy as Web app with access "Anyone", paste the URL into `rsvp.endpoint`, test with a real submission; redeploy a New version after any change); link preview setup and cache-busting; music replacement with an ffmpeg compress command and a note about copyright; free hosting on GitHub Pages (Settings, Pages, main / root), Netlify (drag and drop) and Vercel; connecting a custom domain (A and CNAME records) and updating the 4 absolute URLs afterwards; personalised guest links with `?guest=` (spaces as `%20`, `&` as `%26`).
+
+### 10. How to work with me
+- If something essential is missing (date, venue address, names, final hosting address), ask me ONE short question list first; otherwise decide sensibly and state your assumptions at the top of your final message.
+- Do not invent bank details, phone numbers, story text or vendor names. Use obvious placeholders and list them.
+- If I say "use X as the main name", apply it consistently (hero, footer, seal, titles, share and RSVP messages, calendar title, file names) but keep the full formal names on the invitation card.
+- Send the finished zip plus the standalone `og-image-2.jpg` and `index.html`, then give a short summary and a list of things I must still decide or test myself (live RSVP test, WhatsApp preview, real phone check in Safari and Chrome).
+
+---
+
+## PART 3: QUICK CHECKLIST BEFORE SENDING THE LINK TO GUESTS
+1. All placeholders replaced (story, bank details, vendors, phone numbers).
+2. Real photos in, no leftover photos of the previous couple.
+3. RSVP endpoint pasted and a real test RSVP appears in the Google Sheet.
+4. Music replaced with the licensed MP3 (under about 1.5MB).
+5. Absolute URLs in `index.html` match the live address; the og image opens in a browser.
+6. Facebook Sharing Debugger shows the envelope image; test the link in a fresh WhatsApp chat.
+7. Open on a real iPhone (Safari) and an Android phone (Chrome), plus a laptop.
